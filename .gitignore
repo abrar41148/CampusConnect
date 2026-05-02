@@ -1,0 +1,40 @@
+# ── Python ──
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ── Virtual Environment ──
+.venv/
+venv/
+env/
+
+# ── Django ──
+db.sqlite3
+db.sqlite3-journal
+*.log
+staticfiles/
+
+# ── Media uploads (user-generated content) ──
+media/assignments/
+media/resources/
+media/submissions/
+
+# ── IDE / Editor ──
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── OS junk ──
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Internal dev notes ──
+agile.txt
+
+# ── Environment / Secrets ──
+.env
+*.env

@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Co-Teacher — {{ classroom.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center gap-3 mb-4">
+  <a href="{% url 'classroom_detail' classroom.id %}" class="btn btn-outline-secondary btn-sm">
+    <i class="fas fa-arrow-left me-1"></i>Back to Classroom
+  </a>
+  <h1 class="mb-0 fs-4 fw-bold">
+    <i class="fas fa-user-plus text-primary me-2"></i>Add Co-Teacher
+    <span class="text-muted fw-normal fs-6">— {{ classroom.name }}</span>
+  </h1>
+</div>
+
+{% if error_message %}
+<div class="alert alert-danger"><i class="fas fa-exclamation-circle me-1"></i>{{ error_message }}</div>
+{% endif %}
+{% if success_message %}
+<div class="alert alert-success"><i class="fas fa-check-circle me-1"></i>{{ success_message }}</div>
+{% endif %}
+
+<div class="card mb-4 shadow-sm" style="max-width: 560px;">
+    <div class="card-header bg-light fw-semibold">
+        <i class="fas fa-user-plus me-1 text-muted"></i>Add a Co-Teacher
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            {% csrf_token %}
+            <label class="form-label fw-semibold">Username of the Teacher</label>
+            <div class="input-group">
+                <input type="text" class="form-control" name="coteacher_username" placeholder="e.g. jsmith123" required>
+                <button class="btn btn-primary" type="submit">
+                    <i class="fas fa-plus me-1"></i>Add
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4" style="max-width: 560px;">
+    <div class="card-header bg-light fw-semibold">
+        <i class="fas fa-chalkboard-teacher me-1 text-muted"></i>Current Teachers
+    </div>
+    <div class="card-body p-0">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div><i class="fas fa-crown text-warning me-2"></i>{{ classroom.teacher.username }}</div>
+                <span class="badge bg-primary">Owner</span>
+            </li>
+            {% for ct in co_teachers %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div><i class="fas fa-chalkboard-teacher text-secondary me-2"></i>{{ ct.username }}</div>
+                <span class="badge bg-secondary">Co-Teacher</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<div class="card shadow-sm" style="max-width: 560px;">
+    <div class="card-header bg-light fw-semibold">
+        <i class="fas fa-user-tie me-1 text-muted"></i>Available Teachers
+    </div>
+    <div class="card-body p-0">
+        <ul class="list-group list-group-flush">
+            {% for av_teacher in available_teachers %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div><i class="fas fa-user-tie text-secondary me-2"></i>{{ av_teacher.username }}</div>
+                <form method="POST" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="add_coteacher" value="1">
+                    <input type="hidden" name="coteacher_username" value="{{ av_teacher.username }}">
+                    <button type="submit" class="btn btn-sm btn-outline-success">
+                        <i class="fas fa-plus me-1"></i>Add
+                    </button>
+                </form>
+            </li>
+            {% empty %}
+            <li class="list-group-item text-muted text-center py-3">No other teachers available.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+{% endblock %}

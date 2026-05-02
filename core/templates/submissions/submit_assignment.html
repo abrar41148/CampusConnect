@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit Assignment{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center mb-4 gap-3">
+  <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-sm">
+    <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+  </a>
+  <h1 class="mb-0 fs-4 fw-bold">
+    <i class="fas fa-upload text-primary me-2"></i>Submit Assignment
+  </h1>
+</div>
+
+<div class="card shadow-sm" style="max-width:640px;">
+  <div class="card-body p-4">
+    <h5 class="fw-bold mb-1">{{ assignment.title }}</h5>
+    <p class="text-muted mb-1">{{ assignment.description }}</p>
+    <p class="small text-muted mb-3">
+      <i class="fas fa-clock me-1"></i>Deadline: {{ assignment.deadline|date:"M d, Y H:i" }}
+    </p>
+
+    {% if assignment.file or assignment.extra_files.exists %}
+    <div class="alert alert-light border mb-3">
+      <strong><i class="fas fa-paperclip me-1"></i>Assignment Files:</strong>
+      <ul class="mb-0 mt-1">
+        {% if assignment.file %}
+        <li><a href="{{ assignment.file.url }}" target="_blank">{{ assignment.file.name|slice:"12:" }}</a></li>
+        {% endif %}
+        {% for af in assignment.extra_files.all %}
+        <li><a href="{{ af.file.url }}" target="_blank">{{ af.file.name|slice:"12:" }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    {% if is_past_deadline %}
+    <div class="alert alert-warning">
+      <i class="fas fa-exclamation-triangle me-1"></i>
+      <strong>Late Submission:</strong> The deadline has passed. Your work will be marked as a
+      <strong>Late Submission</strong>.
+    </div>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="mb-4">
+        <label class="form-label fw-semibold">
+          <i class="fas fa-paperclip me-1 text-muted"></i>Your Files
+          <span class="text-muted fw-normal">(multiple allowed)</span>
+        </label>
+        <input class="form-control" type="file" name="files" multiple id="submissionFiles">
+        <div id="submissionFileList" class="mt-2 small text-muted"></div>
+      </div>
+
+      <button class="btn {% if is_past_deadline %}btn-warning{% else %}btn-primary{% endif %} px-4" type="submit">
+        <i class="fas fa-upload me-1"></i>
+        {% if is_past_deadline %}Submit Late{% else %}Submit{% endif %}
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.getElementById('submissionFiles').addEventListener('change', function () {
+    var files = this.files;
+    var list = document.getElementById('submissionFileList');
+    list.innerHTML = '';
+    if (files.length === 0) return;
+    var ul = document.createElement('ul');
+    ul.className = 'list-unstyled mb-0';
+    for (var i = 0; i < files.length; i++) {
+      var li = document.createElement('li');
+      li.innerHTML = '<i class="fas fa-file me-1 text-primary"></i>' + files[i].name +
+                     ' <span class="text-muted">(' + (files[i].size / 1024).toFixed(1) + ' KB)</span>';
+      ul.appendChild(li);
+    }
+    list.appendChild(ul);
+  });
+</script>
+{% endblock %}

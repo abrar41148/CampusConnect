@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Classroom — {{ classroom.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center gap-3 mb-4">
+  <a href="{% url 'classroom_detail' classroom.id %}" class="btn btn-outline-secondary btn-sm">
+    <i class="fas fa-arrow-left me-1"></i>Back to Classroom
+  </a>
+  <h1 class="mb-0 fs-4 fw-bold">
+    <i class="fas fa-edit text-primary me-2"></i>Edit Classroom
+    <span class="text-muted fw-normal fs-6">— {{ classroom.name }}</span>
+  </h1>
+</div>
+
+        {% if error_message %}
+        <div class="alert alert-danger">{{ error_message }}</div>
+        {% endif %}
+        {% if success_message %}
+        <div class="alert alert-success">{{ success_message }}</div>
+        {% endif %}
+
+        <!-- Edit name form -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Classroom Details</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="update_details" value="1">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Classroom Name</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ classroom.name }}" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+
+
+        <!-- Enroll Students Section -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Enroll a Student</h5>
+            </div>
+            <div class="card-body bg-light border-bottom">
+                <input type="text" id="studentSearchInput" class="form-control" placeholder="Search by name or username..." oninput="filterStudents()">
+            </div>
+            <div class="card-body p-0" style="max-height: 250px; overflow-y: auto;">
+                <ul class="list-group list-group-flush" id="availableStudentsList">
+                    {% for student in available_students %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center student-item">
+                        <div class="student-name"><i class="fas fa-user text-secondary me-2"></i> {{ student.first_name }} {{ student.last_name }} ({{ student.username }})</div>
+                        <form method="POST" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="add_student" value="1">
+                            <input type="hidden" name="student_username" value="{{ student.username }}">
+                            <button type="submit" class="btn btn-sm btn-success button-add"><i class="fas fa-plus"></i> Add</button>
+                        </form>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item text-muted text-center py-3">No other students available.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Manage students form/list -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Manage Students</h5>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Student Username</th>
+                            <th>Role</th>
+                            <th class="text-end" style="padding-right: 1.5rem;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for member in members %}
+                        <tr>
+                            <td class="align-middle px-3">{{ member.student.username }}</td>
+                            <td class="align-middle">Student</td>
+                            <td class="text-end px-3">
+                                <form method="POST" style="display: inline;" onsubmit="return confirm('Remove student from classroom?');">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="remove_student" value="1">
+                                    <input type="hidden" name="student_id" value="{{ member.student.id }}">
+                                    <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-center text-muted py-3">No students currently enrolled.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+<script>
+function filterStudents() {
+    const searchInput = document.getElementById('studentSearchInput');
+    if (!searchInput) return;
+    const filter = searchInput.value.toLowerCase();
+    const studentItems = document.querySelectorAll('.student-item');
+
+    studentItems.forEach(function(item) {
+        const nameElem = item.querySelector('.student-name');
+        if (nameElem) {
+            const text = nameElem.textContent.toLowerCase();
+            if (text.includes(filter)) {
+                item.style.display = '';
+                item.classList.add('d-flex');
+            } else {
+                item.style.display = 'none';
+                item.classList.remove('d-flex');
+            }
+        }
+    });
+}
+</script>
+{% endblock %}

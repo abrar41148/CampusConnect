@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Assignment — CampusConnect{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center gap-3 mb-4">
+  <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-sm">
+    <i class="fas fa-arrow-left me-1"></i>Back
+  </a>
+  <h1 class="mb-0 fs-4 fw-bold">
+    <i class="fas fa-plus-circle text-primary me-2"></i>Create Assignment
+  </h1>
+</div>
+
+<div class="card shadow-sm" style="max-width:520px;">
+  <div class="card-body p-4">
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Title <span class="text-danger">*</span></label>
+        <input class="form-control" type="text" name="title" placeholder="Assignment title" required>
+      </div>
+      <div class="mb-4">
+        <label class="form-label fw-semibold">File <span class="text-danger">*</span></label>
+        <input class="form-control" type="file" name="file" required>
+      </div>
+      <button class="btn btn-primary px-4" type="submit">
+        <i class="fas fa-upload me-1"></i>Upload
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

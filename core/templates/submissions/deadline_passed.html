@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Deadline Passed — CampusConnect{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+  <i class="fas fa-clock fa-3x text-warning mb-3"></i>
+  <h2 class="fw-bold">Deadline Passed</h2>
+  <p class="text-muted">You can no longer submit this assignment.</p>
+  <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-sm mt-2">
+    <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+  </a>
+</div>
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Assignment — {{ classroom.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center mb-4 gap-3">
+  <a href="{% url 'assignment_detail' assignment.id %}" class="btn btn-outline-secondary btn-sm">
+    <i class="fas fa-arrow-left me-1"></i>Back
+  </a>
+  <h1 class="mb-0 fs-4 fw-bold">
+    <i class="fas fa-edit text-primary me-2"></i>Edit Assignment
+    <span class="text-muted fw-normal fs-6">— {{ classroom.name }}</span>
+  </h1>
+</div>
+
+<div class="card shadow-sm" style="max-width:680px;">
+  <div class="card-body p-4">
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Title <span class="text-danger">*</span></label>
+        <input class="form-control" type="text" name="title"
+               value="{{ assignment.title }}" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Description</label>
+        <textarea class="form-control" name="description" rows="3">{{ assignment.description }}</textarea>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-sm-6">
+          <label class="form-label fw-semibold">Deadline Date <span class="text-danger">*</span></label>
+          <input class="form-control" type="date" name="deadline_date"
+                 value="{{ assignment.deadline|date:'Y-m-d' }}" required>
+        </div>
+        <div class="col-sm-6">
+          <label class="form-label fw-semibold">Deadline Time <span class="text-danger">*</span></label>
+          <input class="form-control" type="time" name="deadline_time"
+                 value="{{ assignment.deadline|date:'H:i' }}" required>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Max Grade</label>
+        <input class="form-control w-auto" type="number" name="max_grade"
+               value="{{ assignment.max_grade }}" min="1" required>
+      </div>
+
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" name="allow_late_submissions"
+               id="allowLateSubmissions" {% if assignment.allow_late_submissions %}checked{% endif %}>
+        <label class="form-check-label" for="allowLateSubmissions">Allow Late Submissions</label>
+      </div>
+
+      <!-- Existing attachments -->
+      {% if assignment.file or assignment.extra_files.exists %}
+      <div class="mb-3">
+        <label class="form-label fw-semibold">
+          <i class="fas fa-paperclip me-1 text-muted"></i>Current Attachments
+        </label>
+        <ul class="list-unstyled ms-1">
+          {% if assignment.file %}
+          <li class="mb-1 text-muted small">
+            <i class="fas fa-file me-1"></i>{{ assignment.file.name|slice:"12:" }}
+            <span class="badge bg-secondary ms-1">Primary</span>
+          </li>
+          {% endif %}
+          {% for af in assignment.extra_files.all %}
+          <li class="mb-1 d-flex align-items-center">
+            <div class="form-check mb-0">
+              <input class="form-check-input" type="checkbox" name="remove_files"
+                     value="{{ af.id }}" id="removeFile{{ af.id }}">
+              <label class="form-check-label small" for="removeFile{{ af.id }}">
+                <i class="fas fa-file me-1 text-muted"></i>{{ af.file.name|slice:"12:" }}
+                <span class="text-danger ms-1">(check to remove)</span>
+              </label>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <div class="mb-4">
+        <label class="form-label fw-semibold">
+          <i class="fas fa-paperclip me-1 text-muted"></i>Upload New Files
+          <span class="text-muted fw-normal">(replaces primary file if provided)</span>
+        </label>
+        <input class="form-control" type="file" name="files" multiple id="assignmentFiles">
+        <div id="assignmentFileList" class="mt-2 small text-muted"></div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button class="btn btn-primary px-4" type="submit">
+          <i class="fas fa-save me-1"></i>Save Changes
+        </button>
+        <a href="{% url 'assignment_detail' assignment.id %}" class="btn btn-outline-secondary">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.getElementById('assignmentFiles').addEventListener('change', function () {
+    var files = this.files;
+    var list = document.getElementById('assignmentFileList');
+    list.innerHTML = '';
+    if (files.length === 0) return;
+    var ul = document.createElement('ul');
+    ul.className = 'list-unstyled mb-0';
+    for (var i = 0; i < files.length; i++) {
+      var li = document.createElement('li');
+      li.innerHTML = '<i class="fas fa-file me-1"></i>' + files[i].name +
+                     ' <span class="text-muted">(' + (files[i].size / 1024).toFixed(1) + ' KB)</span>';
+      ul.appendChild(li);
+    }
+    list.appendChild(ul);
+  });
+</script>
+{% endblock %}

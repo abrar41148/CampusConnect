@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Full Attendance Sheet — CampusConnect{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center gap-3 mb-4">
+  <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-sm">
+    <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+  </a>
+  <h1 class="mb-0 fs-4 fw-bold">
+    <i class="fas fa-table text-primary me-2"></i>Full Attendance Sheet
+  </h1>
+</div>
+<p class="text-muted mb-4">An overview of your attendance rate across all enrolled classrooms.</p>
+
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-dark">
+        <tr>
+          <th>Classroom</th>
+          <th class="text-center">Sessions</th>
+          <th class="text-center">Attended</th>
+          <th class="text-center">Missed</th>
+          <th class="text-center">Rate</th>
+          <th class="text-center">Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for stat in attendance_summary %}
+        <tr>
+          <td class="fw-semibold">{{ stat.classroom.name }}</td>
+          <td class="text-center text-muted">{{ stat.total_sessions }}</td>
+          <td class="text-center text-success fw-semibold">{{ stat.total_present }}</td>
+          <td class="text-center text-danger fw-semibold">{{ stat.total_absent }}</td>
+          <td class="text-center">
+            {% if stat.total_sessions > 0 %}
+            <span class="badge fs-6 {% if stat.percentage >= 75 %}bg-success{% elif stat.percentage >= 50 %}bg-warning text-dark{% else %}bg-danger{% endif %}">
+              {{ stat.percentage }}%
+            </span>
+            {% else %}
+            <span class="text-muted">N/A</span>
+            {% endif %}
+          </td>
+          <td class="text-center">
+            <a href="{% url 'student_attendance' stat.classroom.id %}" class="btn btn-sm btn-outline-primary">
+              <i class="fas fa-eye me-1"></i>View Ledger
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="text-center text-muted py-5">
+            <i class="fas fa-door-open fa-2x mb-2 text-secondary d-block"></i>
+            You have not joined any classrooms yet.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

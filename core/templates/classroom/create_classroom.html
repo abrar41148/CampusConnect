@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Classroom — CampusConnect{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center gap-3 mb-4">
+  <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-sm">
+    <i class="fas fa-arrow-left me-1"></i>Back
+  </a>
+  <h1 class="mb-0 fs-4 fw-bold"><i class="fas fa-plus-circle text-primary me-2"></i>Create Classroom</h1>
+</div>
+
+<div class="card shadow-sm" style="max-width: 480px;">
+  <div class="card-body p-4">
+    <form method="POST">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label class="form-label fw-semibold" for="classroom-name">Classroom Name <span class="text-danger">*</span></label>
+        <input class="form-control" id="classroom-name" type="text" name="name"
+               placeholder="e.g. CS101 — Section A" required>
+      </div>
+      <button class="btn btn-primary" type="submit">
+        <i class="fas fa-check me-1"></i>Create Classroom
+      </button>
+    </form>
+
+    {% if created_classroom %}
+    <div class="alert alert-success mt-4 mb-0">
+      <i class="fas fa-check-circle me-1"></i>
+      Classroom <strong>{{ created_classroom.name }}</strong> created!
+      <br>
+      Join Code: <code class="fs-5 fw-bold">{{ created_classroom.join_code }}</code>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

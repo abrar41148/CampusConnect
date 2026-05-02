@@ -1,0 +1,25 @@
+/*
+ * dashboard.css — Legacy overrides (cleaned up)
+ *
+ * Most styles have been migrated to CSS custom properties in base.html
+ * and inline <style> blocks in each template. This file is kept minimal
+ * to avoid conflicting with Bootstrap and the theme system.
+ */
+
+.btn-view,
+.btn-delete {
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.btn-view {
+    background: #34a853;
+    color: white;
+}
+
+.btn-delete {
+    background: #ea4335;
+    color: white;
+}

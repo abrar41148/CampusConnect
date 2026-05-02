@@ -1,0 +1,393 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CampusConnect{% endblock %}</title>
+    <!-- Google Font — Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- ══════════════════════════════════════════
+         DESIGN SYSTEM — CSS Custom Properties
+    ══════════════════════════════════════════ -->
+    <style>
+      /* ── Light theme (default) ── */
+      :root, [data-theme="light"] {
+        --cc-body-bg: #f0f2f5;
+        --cc-surface: #ffffff;
+        --cc-surface-alt: #f8f9fa;
+        --cc-surface-hover: #f1f3f5;
+        --cc-text: #212529;
+        --cc-text-secondary: #6c757d;
+        --cc-border: #dee2e6;
+        --cc-border-light: #e9ecef;
+        --cc-card-bg: #ffffff;
+        --cc-card-header-bg: #f8f9fa;
+        --cc-input-bg: #ffffff;
+        --cc-input-border: #ced4da;
+        --cc-input-text: #212529;
+        --cc-table-bg: transparent;
+        --cc-table-stripe-bg: rgba(0,0,0,.02);
+        --cc-table-hover-bg: rgba(0,0,0,.04);
+        --cc-table-header-bg: #f8f9fa;
+        --cc-dropdown-bg: #ffffff;
+        --cc-dropdown-hover: #f8f9fa;
+        --cc-shadow: 0 1px 3px rgba(0,0,0,.08);
+        --cc-shadow-lg: 0 4px 16px rgba(0,0,0,.1);
+        --cc-code-bg: #e9ecef;
+        --cc-alert-light-bg: #f8f9fa;
+        --cc-alert-light-border: #dee2e6;
+        --cc-navbar-bg: #1a1d23;
+        --cc-link-color: #0d6efd;
+      }
+
+      /* ── Dark theme ── */
+      [data-theme="dark"] {
+        --cc-body-bg: #0f1117;
+        --cc-surface: #1a1d25;
+        --cc-surface-alt: #21242d;
+        --cc-surface-hover: #282c36;
+        --cc-text: #e4e6ea;
+        --cc-text-secondary: #9ca3af;
+        --cc-border: #2d3140;
+        --cc-border-light: #252833;
+        --cc-card-bg: #1a1d25;
+        --cc-card-header-bg: #21242d;
+        --cc-input-bg: #21242d;
+        --cc-input-border: #3a3f4e;
+        --cc-input-text: #e4e6ea;
+        --cc-table-bg: #1a1d25;
+        --cc-table-stripe-bg: rgba(255,255,255,.02);
+        --cc-table-hover-bg: rgba(255,255,255,.04);
+        --cc-table-header-bg: #21242d;
+        --cc-dropdown-bg: #21242d;
+        --cc-dropdown-hover: #282c36;
+        --cc-shadow: 0 1px 3px rgba(0,0,0,.3);
+        --cc-shadow-lg: 0 4px 16px rgba(0,0,0,.4);
+        --cc-code-bg: #282c36;
+        --cc-alert-light-bg: #21242d;
+        --cc-alert-light-border: #2d3140;
+        --cc-navbar-bg: #111318;
+        --cc-link-color: #6ea8fe;
+      }
+
+      /* ── Global base ── */
+      * { transition: background-color .2s ease, border-color .2s ease, color .15s ease, box-shadow .2s ease; }
+      html { scroll-behavior: smooth; }
+
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background-color: var(--cc-body-bg);
+        color: var(--cc-text);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      a { color: var(--cc-link-color); }
+
+      /* ── Navbar ── */
+      .navbar { background-color: var(--cc-navbar-bg) !important; }
+      .navbar-brand { font-weight: 700; letter-spacing: -.3px; }
+
+      .dark-toggle {
+        background: none;
+        border: 1px solid rgba(255,255,255,.2);
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: .85rem;
+        cursor: pointer;
+        transition: background .2s, border-color .2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .dark-toggle:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.35); }
+
+      /* ── Main wrapper ── */
+      .cc-main {
+        background: var(--cc-surface);
+        border-radius: 14px;
+        box-shadow: var(--cc-shadow);
+        border: 1px solid var(--cc-border-light);
+      }
+
+      /* ── Bootstrap overrides ── */
+
+      /* Card */
+      .card {
+        background-color: var(--cc-card-bg);
+        border-color: var(--cc-border);
+        color: var(--cc-text);
+      }
+      .card-header {
+        background-color: var(--cc-card-header-bg) !important;
+        border-bottom-color: var(--cc-border);
+        color: var(--cc-text);
+      }
+      .card-body { color: var(--cc-text); }
+      .card-footer { background-color: var(--cc-card-header-bg); border-top-color: var(--cc-border); }
+
+      .bg-light { background-color: var(--cc-surface-alt) !important; color: var(--cc-text) !important; }
+
+      /* Table */
+      .table { --bs-table-bg: var(--cc-table-bg); --bs-table-color: var(--cc-text); --bs-table-border-color: var(--cc-border); }
+      .table-hover > tbody > tr:hover { --bs-table-hover-bg: var(--cc-table-hover-bg); --bs-table-hover-color: var(--cc-text); }
+      .table-striped > tbody > tr:nth-of-type(odd) { --bs-table-striped-bg: var(--cc-table-stripe-bg); }
+      .table-light, .table thead.table-light { --bs-table-bg: var(--cc-table-header-bg); --bs-table-color: var(--cc-text); --bs-table-border-color: var(--cc-border); }
+      .table-dark, .table thead.table-dark { --bs-table-bg: var(--cc-navbar-bg); --bs-table-color:#e4e6ea; }
+
+      /* Forms */
+      .form-control, .form-select {
+        background-color: var(--cc-input-bg);
+        border-color: var(--cc-input-border);
+        color: var(--cc-input-text);
+      }
+      .form-control:focus, .form-select:focus {
+        background-color: var(--cc-input-bg);
+        color: var(--cc-input-text);
+        border-color: #6ea8fe;
+        box-shadow: 0 0 0 .2rem rgba(13,110,253,.15);
+      }
+      .form-control::placeholder { color: var(--cc-text-secondary); opacity: .65; }
+      .form-label { color: var(--cc-text); }
+      .form-check-label { color: var(--cc-text); }
+
+      /* List group */
+      .list-group-item {
+        background-color: var(--cc-card-bg);
+        border-color: var(--cc-border);
+        color: var(--cc-text);
+      }
+
+      /* Dropdown */
+      .dropdown-menu {
+        background-color: var(--cc-dropdown-bg);
+        border-color: var(--cc-border);
+      }
+      .dropdown-item { color: var(--cc-text); }
+      .dropdown-item:hover, .dropdown-item:focus { background-color: var(--cc-dropdown-hover); color: var(--cc-text); }
+
+      /* Alert overrides for dark */
+      .alert-light { background-color: var(--cc-alert-light-bg); border-color: var(--cc-alert-light-border); color: var(--cc-text); }
+
+      /* Misc */
+      code { background: var(--cc-code-bg); padding: 2px 6px; border-radius: 4px; font-size: .88em; }
+      pre { background: var(--cc-code-bg); border-radius: 8px; padding: 12px; }
+      hr { border-color: var(--cc-border); opacity: .4; }
+      .text-muted { color: var(--cc-text-secondary) !important; }
+      .text-dark { color: var(--cc-text) !important; }
+      .shadow-sm { box-shadow: var(--cc-shadow) !important; }
+      .border { border-color: var(--cc-border) !important; }
+      .border-bottom { border-bottom-color: var(--cc-border) !important; }
+      .rounded { border-radius: 10px !important; }
+
+      /* Modal */
+      .modal-content { background-color: var(--cc-surface); color: var(--cc-text); border-color: var(--cc-border); }
+      .modal-header { border-bottom-color: var(--cc-border); }
+      .modal-footer { border-top-color: var(--cc-border); }
+
+      /* Nav tabs */
+      .nav-tabs { border-bottom-color: var(--cc-border); }
+      .nav-tabs .nav-link { color: var(--cc-text-secondary); }
+      .nav-tabs .nav-link.active {
+        background-color: var(--cc-surface);
+        color: var(--cc-link-color);
+        border-color: var(--cc-border) var(--cc-border) var(--cc-surface);
+      }
+
+      /* Btn outline secondary in dark */
+      [data-theme="dark"] .btn-outline-secondary {
+        color: var(--cc-text-secondary);
+        border-color: var(--cc-border);
+      }
+      [data-theme="dark"] .btn-outline-secondary:hover {
+        background-color: var(--cc-surface-hover);
+        color: var(--cc-text);
+      }
+      [data-theme="dark"] .btn-outline-danger {
+        color: #ea868f;
+        border-color: #842029;
+      }
+      [data-theme="dark"] .btn-outline-primary {
+        color: #6ea8fe;
+        border-color: #3d6bb5;
+      }
+
+      /* Toast in dark */
+      [data-theme="dark"] .toast { border-color: var(--cc-border); }
+
+      /* bg-white helper → use surface */
+      [data-theme="dark"] .bg-white { background-color: var(--cc-surface) !important; }
+
+      /* Table bordered in dark */
+      [data-theme="dark"] .table-bordered { --bs-table-border-color: var(--cc-border); }
+
+      /* Pagination */
+      .page-link { background-color: var(--cc-card-bg); border-color: var(--cc-border); color: var(--cc-link-color); }
+      .page-link:hover { background-color: var(--cc-surface-hover); }
+
+      /* ── Print: force light ── */
+      @media print { body { background: #fff !important; color: #000 !important; } }
+
+      {% block extra_css %}{% endblock %}
+    </style>
+</head>
+<body>
+
+    <!-- Unified Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'login' %}{% endif %}">
+                <i class="fas fa-graduation-cap text-warning"></i> CampusConnect
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+                        </li>
+                        <li class="nav-item text-light mx-3 d-none d-lg-block">
+                            <i class="fas fa-user-circle"></i> {{ request.user.username }}
+                        </li>
+                        <li class="nav-item me-2">
+                            <button class="dark-toggle" id="darkModeToggle" type="button"
+                                    title="Toggle dark mode" aria-label="Toggle dark mode">
+                                <i class="fas fa-moon" id="darkModeIcon"></i>
+                                <span id="darkModeLabel">Dark</span>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <form method="post" action="{% url 'logout' %}" style="display:inline; margin: 0;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-light btn-sm ms-1">Logout</button>
+                            </form>
+                        </li>
+                    {% else %}
+                        <li class="nav-item me-2">
+                            <button class="dark-toggle" id="darkModeToggle" type="button"
+                                    title="Toggle dark mode" aria-label="Toggle dark mode">
+                                <i class="fas fa-moon" id="darkModeIcon"></i>
+                                <span id="darkModeLabel">Dark</span>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Injection -->
+    <div class="container pt-2 pb-5 mb-5 cc-main p-4">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- ── IT Helpdesk Footer ── -->
+    <footer id="helpdesk-footer" style="
+        background-color: var(--cc-navbar-bg);
+        color: rgba(255,255,255,.7);
+        text-align: center;
+        padding: 18px 16px;
+        font-size: .85rem;
+        margin-top: 2rem;
+        letter-spacing: .2px;
+    ">
+        <i class="fas fa-headset" style="margin-right:6px; color:#f0ad4e;"></i>
+        <strong style="color:#fff;">IT Helpdesk</strong>
+        <span style="margin: 0 10px; opacity:.4;">|</span>
+        <i class="fas fa-envelope" style="margin-right:4px;"></i>
+        <a href="mailto:ithelpdesk@campusconnect.edu" style="color:#6ea8fe; text-decoration:none;">ithelpdesk@campusconnect.edu</a>
+        <span style="margin: 0 10px; opacity:.4;">|</span>
+        <i class="fas fa-phone" style="margin-right:4px;"></i>
+        <a href="tel:+911234567890" style="color:#6ea8fe; text-decoration:none;">+91 12345 67890</a>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    {% if messages %}
+    <!-- ── Django messages → Bootstrap toasts ── -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+      {% for message in messages %}
+      <div class="toast align-items-center border-0 show
+        {% if message.tags == 'error' %}text-bg-danger
+        {% elif message.tags == 'warning' %}text-bg-warning text-dark
+        {% elif message.tags == 'success' %}text-bg-success
+        {% else %}text-bg-primary{% endif %}"
+        role="alert" aria-live="assertive" aria-atomic="true"
+        data-bs-autohide="true" data-bs-delay="3500">
+        <div class="d-flex">
+          <div class="toast-body fw-semibold">
+            {% if message.tags == 'success' %}<i class="fas fa-check-circle me-2"></i>
+            {% elif message.tags == 'error' %}<i class="fas fa-exclamation-circle me-2"></i>
+            {% else %}<i class="fas fa-info-circle me-2"></i>{% endif %}
+            {{ message }}
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                  data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <script>
+      document.querySelectorAll('.toast').forEach(function (el) {
+        bootstrap.Toast.getOrCreateInstance(el).show();
+      });
+    </script>
+    {% endif %}
+
+    <!-- ── Dark mode toggle logic ── -->
+    <script>
+    (function () {
+      var html  = document.documentElement;
+      var btn   = document.getElementById('darkModeToggle');
+      var icon  = document.getElementById('darkModeIcon');
+      var label = document.getElementById('darkModeLabel');
+
+      function applyTheme(theme) {
+        html.setAttribute('data-theme', theme);
+        if (theme === 'dark') {
+          icon.className  = 'fas fa-sun';
+          label.textContent = 'Light';
+        } else {
+          icon.className  = 'fas fa-moon';
+          label.textContent = 'Dark';
+        }
+      }
+
+      // Load stored preference, fallback to OS preference, else light
+      var stored = localStorage.getItem('cc-theme');
+      if (stored) {
+        applyTheme(stored);
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        applyTheme('dark');
+      }
+
+      if (btn) {
+        btn.addEventListener('click', function () {
+          var next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+          applyTheme(next);
+          localStorage.setItem('cc-theme', next);
+        });
+      }
+    })();
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

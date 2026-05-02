@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Record Attendance — {{ classroom.name }}{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
+  <a href="{% url 'classroom_detail' classroom.id %}" class="btn btn-outline-secondary btn-sm">
+    <i class="fas fa-arrow-left me-1"></i>Back to Classroom
+  </a>
+  <h1 class="mb-0 fs-4 fw-bold">
+    <i class="fas fa-clipboard-check text-primary me-2"></i>Record Attendance
+    <span class="text-muted fw-normal fs-6">— {{ classroom.name }}</span>
+  </h1>
+</div>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <!-- Session Details -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header fw-semibold">
+            <i class="fas fa-info-circle me-1 text-muted"></i>Session Details
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Date</label>
+                    <input type="date" name="date" class="form-control" value="{{ default_date }}" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Start Time</label>
+                    <input type="time" name="start_time" id="start_time" class="form-control" value="{{ default_start_time }}" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">End Time</label>
+                    <div class="input-group">
+                        <input type="time" name="end_time" id="end_time" class="form-control" required>
+                        <button type="button" class="btn btn-outline-secondary" onclick="addHours(1)">+1h</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="addHours(2)">+2h</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Roster -->
+    <div class="card shadow-sm">
+        <div class="card-header fw-semibold">
+            <i class="fas fa-users me-1 text-muted"></i>Student Roster
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for membership in students %}
+                    <tr>
+                        <td class="align-middle px-3">
+                            <i class="fas fa-user-circle me-1 text-secondary"></i>
+                            {{ membership.student.username }}
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="status_{{ membership.student.id }}" id="present_{{ membership.student.id }}" value="Present" autocomplete="off" checked>
+                                <label class="btn btn-outline-success" for="present_{{ membership.student.id }}">Present</label>
+
+                                <input type="radio" class="btn-check" name="status_{{ membership.student.id }}" id="absent_{{ membership.student.id }}" value="Absent" autocomplete="off">
+                                <label class="btn btn-outline-danger" for="absent_{{ membership.student.id }}">Absent</label>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" class="text-center text-muted py-4">No students currently enrolled in this classroom.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+            <a href="{% url 'classroom_detail' classroom.id %}" class="btn btn-outline-secondary btn-sm">Cancel</a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-1"></i>Save Attendance Record
+            </button>
+        </div>
+    </div>
+</form>
+
+<script>
+function addHours(hrs) {
+    const startTimeInput = document.getElementById('start_time').value;
+    if (!startTimeInput) return;
+    
+    let [hours, minutes] = startTimeInput.split(':').map(Number);
+    let date = new Date();
+    date.setHours(hours, minutes, 0, 0);
+    date.setHours(date.getHours() + hrs);
+    
+    let hh = String(date.getHours()).padStart(2, '0');
+    let mm = String(date.getMinutes()).padStart(2, '0');
+    
+    document.getElementById('end_time').value = `${hh}:${mm}`;
+}
+
+window.onload = function() {
+    addHours(1);
+};
+</script>
+{% endblock %}

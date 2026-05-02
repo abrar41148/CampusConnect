@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Assignment — {{ classroom.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center mb-4 gap-3">
+  <a href="{% url 'classroom_detail' classroom.id %}" class="btn btn-outline-secondary btn-sm">
+    <i class="fas fa-arrow-left me-1"></i>Back
+  </a>
+  <h1 class="mb-0 fs-4 fw-bold">
+    <i class="fas fa-plus-circle text-primary me-2"></i>Create Assignment
+    <span class="text-muted fw-normal fs-6">— {{ classroom.name }}</span>
+  </h1>
+</div>
+
+<div class="card shadow-sm" style="max-width:680px;">
+  <div class="card-body p-4">
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Title <span class="text-danger">*</span></label>
+        <input class="form-control" type="text" name="title" placeholder="Assignment title" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Description</label>
+        <textarea class="form-control" name="description" rows="3" placeholder="Describe the assignment…"></textarea>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-sm-6">
+          <label class="form-label fw-semibold">Deadline Date <span class="text-danger">*</span></label>
+          <input class="form-control" type="date" name="deadline_date" required>
+        </div>
+        <div class="col-sm-6">
+          <label class="form-label fw-semibold">Deadline Time <span class="text-danger">*</span></label>
+          <input class="form-control" type="time" name="deadline_time" required>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Max Grade</label>
+        <input class="form-control w-auto" type="number" name="max_grade" value="100" min="1" required>
+      </div>
+
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" name="allow_late_submissions"
+               id="allowLateSubmissions" checked>
+        <label class="form-check-label" for="allowLateSubmissions">Allow Late Submissions</label>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label fw-semibold">
+          <i class="fas fa-paperclip me-1 text-muted"></i>Attachments
+          <span class="text-muted fw-normal">(optional, multiple allowed)</span>
+        </label>
+        <input class="form-control" type="file" name="files" multiple id="assignmentFiles">
+        <div id="assignmentFileList" class="mt-2 small text-muted"></div>
+      </div>
+
+      <button class="btn btn-primary px-4" type="submit">
+        <i class="fas fa-check me-1"></i>Create Assignment
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.getElementById('assignmentFiles').addEventListener('change', function () {
+    var files = this.files;
+    var list = document.getElementById('assignmentFileList');
+    list.innerHTML = '';
+    if (files.length === 0) return;
+    var ul = document.createElement('ul');
+    ul.className = 'list-unstyled mb-0';
+    for (var i = 0; i < files.length; i++) {
+      var li = document.createElement('li');
+      li.innerHTML = '<i class="fas fa-file me-1"></i>' + files[i].name +
+                     ' <span class="text-muted">(' + (files[i].size / 1024).toFixed(1) + ' KB)</span>';
+      ul.appendChild(li);
+    }
+    list.appendChild(ul);
+  });
+</script>
+{% endblock %}
